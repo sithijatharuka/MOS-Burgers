@@ -30,8 +30,7 @@
     <input type="text" id="item-price" />
     <label for="item-quantity">Quantity:</label>
     <input type="text" id="item-quantity" />
-    <button onclick="addOrUpdateItem()">Add</button>
-    <button onclick="">Update</button>
+    <button onclick="addOrUpdateItem()">Add/Update</button>
 
     <h2>Product Items Table</h2>
     <table id="products-table">
@@ -73,8 +72,6 @@
           price: itemPriceInput,
           quantity: itemQtyInput,
         };
-
-        
 
         if (editingIndex === -1) {
           // Add new item
