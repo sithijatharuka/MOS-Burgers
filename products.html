@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product</title>
+    <style>
+      table,
+      th,
+      td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding: 8px;
+        text-align: left;
+      }
+      th,
+      td {
+        width: 150px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Product Management</h1>
+
+    <label for="item-code">Item Code:</label>
+    <input type="text" id="item-code" />
+    <label for="item-name">Item Name:</label>
+    <input type="text" id="item-name" />
+    <label for="item-price">Price:</label>
+    <input type="text" id="item-price" />
+    <label for="item-quantity">Quantity:</label>
+    <input type="text" id="item-quantity" />
+    <button onclick="addOrUpdateItem()">Add</button>
+    <button onclick="">Update</button>
+
+    <h2>Product Items Table</h2>
+    <table id="products-table">
+      <thead>
+        <tr>
+          <th>Item Code</th>
+          <th>Item Name</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <script>
+      let productItems = [];
+      let editingIndex = -1;
+
+      function addOrUpdateItem() {
+        const itemCodeInput = document.getElementById("item-code").value;
+        const itemNameInput = document.getElementById("item-name").value;
+        const itemPriceInput = document.getElementById("item-price").value;
+        const itemQtyInput = document.getElementById("item-quantity").value;
+
+        if (
+          itemCodeInput === "" ||
+          itemNameInput === "" ||
+          itemPriceInput === "" ||
+          itemQtyInput === ""
+        ) {
+          alert("Enter all values");
+          return;
+        }
+
+        const newItem = {
+          code: itemCodeInput,
+          name: itemNameInput,
+          price: itemPriceInput,
+          quantity: itemQtyInput,
+        };
+
+        
+
+        if (editingIndex === -1) {
+          // Add new item
+          productItems.push(newItem);
+        } else {
+          // Update existing item
+          productItems[editingIndex] = newItem;
+          editingIndex = -1;
+        }
+
+        document.getElementById("item-code").value = "";
+        document.getElementById("item-name").value = "";
+        document.getElementById("item-price").value = "";
+        document.getElementById("item-quantity").value = "";
+
+        loadTable();
+      }
+
+      function loadTable() {
+        const tableBody = document
+          .getElementById("products-table")
+          .querySelector("tbody");
+        tableBody.innerHTML = "";
+
+        productItems.forEach((item, index) => {
+          const newRow = tableBody.insertRow();
+
+          const codeCell = newRow.insertCell(0);
+          const nameCell = newRow.insertCell(1);
+          const priceCell = newRow.insertCell(2);
+          const quantityCell = newRow.insertCell(3);
+          const actionCell = newRow.insertCell(4);
+
+          codeCell.textContent = item.code;
+          nameCell.textContent = item.name;
+          priceCell.textContent = item.price;
+          quantityCell.textContent = item.quantity;
+
+          const editButton = document.createElement("button");
+          editButton.textContent = "Edit";
+          editButton.onclick = function () {
+            editItem(index);
+          };
+          actionCell.appendChild(editButton);
+
+          const deleteButton = document.createElement("button");
+          deleteButton.textContent = "Delete";
+          deleteButton.onclick = function () {
+            deleteItem(index);
+          };
+          actionCell.appendChild(deleteButton);
+        });
+      }
+
+      function editItem(index) {
+        const item = productItems[index];
+        document.getElementById("item-code").value = item.code;
+        document.getElementById("item-name").value = item.name;
+        document.getElementById("item-price").value = item.price;
+        document.getElementById("item-quantity").value = item.quantity;
+
+        editingIndex = index;
+      }
+
+      function deleteItem(index) {
+        productItems.splice(index, 1);
+        loadTable();
+      }
+    </script>
+  </body>
+</html>

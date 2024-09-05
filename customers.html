@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Customer Management</title>
+    <style>
+      table,
+      th,
+      td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding: 8px;
+        text-align: left;
+      }
+      th,
+      td {
+        width: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Customer Management</h1>
+
+    <!-- Input fields -->
+    <label for="customer-id">Customer ID:</label>
+    <input type="text" id="customer-id" />
+    <label for="customer-name">Customer Name:</label>
+    <input type="text" id="customer-name" />
+    <label for="customer-email">Email:</label>
+    <input type="email" id="customer-email" />
+    <label for="customer-phone">Phone Number:</label>
+    <input type="text" id="customer-phone" />
+    <button onclick="addOrUpdateCustomer()">Add/Update</button>
+
+    <!-- Table to display customer records -->
+    <h2>Customer Records Table</h2>
+    <table id="customer-table">
+      <thead>
+        <tr>
+          <th>Customer ID</th>
+          <th>Customer Name</th>
+          <th>Email</th>
+          <th>Phone Number</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Data will be inserted here -->
+      </tbody>
+    </table>
+
+    <script>
+      let customerRecords = [];
+      let editingIndex = -1;
+
+      function addOrUpdateCustomer() {
+        const customerIdInput = document.getElementById("customer-id").value;
+        const customerNameInput =
+          document.getElementById("customer-name").value;
+        const customerEmailInput =
+          document.getElementById("customer-email").value;
+        const customerPhoneInput =
+          document.getElementById("customer-phone").value;
+
+        if (
+          customerIdInput === "" ||
+          customerNameInput === "" ||
+          customerEmailInput === "" ||
+          customerPhoneInput === ""
+        ) {
+          alert("Please fill in all fields.");
+          return;
+        }
+
+        const newCustomer = {
+          id: customerIdInput,
+          name: customerNameInput,
+          email: customerEmailInput,
+          phone: customerPhoneInput,
+        };
+
+        if (editingIndex === -1) {
+          // Add new customer
+          customerRecords.push(newCustomer);
+        } else {
+          // Update existing customer
+          customerRecords[editingIndex] = newCustomer;
+          editingIndex = -1;
+        }
+
+        // Clear input fields
+        document.getElementById("customer-id").value = "";
+        document.getElementById("customer-name").value = "";
+        document.getElementById("customer-email").value = "";
+        document.getElementById("customer-phone").value = "";
+
+        renderTable();
+      }
+
+      function renderTable() {
+        const tableBody = document
+          .getElementById("customer-table")
+          .querySelector("tbody");
+        tableBody.innerHTML = "";
+
+        customerRecords.forEach((customer, index) => {
+          const newRow = tableBody.insertRow();
+
+          const idCell = newRow.insertCell(0);
+          const nameCell = newRow.insertCell(1);
+          const emailCell = newRow.insertCell(2);
+          const phoneCell = newRow.insertCell(3);
+          const actionCell = newRow.insertCell(4);
+
+          idCell.textContent = customer.id;
+          nameCell.textContent = customer.name;
+          emailCell.textContent = customer.email;
+          phoneCell.textContent = customer.phone;
+
+          const editButton = document.createElement("button");
+          editButton.textContent = "Edit";
+          editButton.onclick = function () {
+            editCustomer(index);
+          };
+          actionCell.appendChild(editButton);
+
+          const deleteButton = document.createElement("button");
+          deleteButton.textContent = "Delete";
+          deleteButton.onclick = function () {
+            deleteCustomer(index);
+          };
+          actionCell.appendChild(deleteButton);
+        });
+      }
+
+      function editCustomer(index) {
+        const customer = customerRecords[index];
+        document.getElementById("customer-id").value = customer.id;
+        document.getElementById("customer-name").value = customer.name;
+        document.getElementById("customer-email").value = customer.email;
+        document.getElementById("customer-phone").value = customer.phone;
+
+        editingIndex = index;
+      }
+
+      function deleteCustomer(index) {
+        customerRecords.splice(index, 1);
+        renderTable();
+      }
+    </script>
+  </body>
+</html>

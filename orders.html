@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order Page with Cart</title>
+    <style>
+      table,
+      th,
+      td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding: 8px;
+        text-align: left;
+      }
+      th,
+      td {
+        width: 150px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Order Page</h1>
+
+    <!-- Search -->
+    <label for="product-search">Search Product:</label>
+    <input type="text" id="product-search" oninput="searchProduct()" />
+    <button onclick="clearSearch()">Clear</button>
+
+    <!-- Product List -->
+    <h2>Product List</h2>
+    <table id="product-table">
+      <thead>
+        <tr>
+          <th>Item Code</th>
+          <th>Item Name</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <!-- Cart -->
+    <h2>Shopping Cart</h2>
+    <table id="cart-table">
+      <thead>
+        <tr>
+          <th>Item Code</th>
+          <th>Item Name</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Total</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <h3>Total Price: <span id="total-price">0.00</span></h3>
+
+    <script>
+      const products = [
+        { code: "P001", name: "Product 1", price: 10 },
+        { code: "P002", name: "Product 2", price: 20 },
+        { code: "P003", name: "Product 3", price: 30 },
+        { code: "P004", name: "Product 4", price: 40 },
+      ];
+
+      let cart = [];
+
+      function searchProduct() {
+        const searchQuery = document
+          .getElementById("product-search")
+          .value.toLowerCase();
+        const filteredProducts = products.filter((product) =>
+          product.name.toLowerCase().includes(searchQuery)
+        );
+        renderProductTable(filteredProducts);
+      }
+
+      function renderProductTable(productList) {
+        const tableBody = document
+          .getElementById("product-table")
+          .querySelector("tbody");
+        tableBody.innerHTML = "";
+
+        productList.forEach((product) => {
+          const newRow = tableBody.insertRow();
+
+          const codeCell = newRow.insertCell(0);
+          const nameCell = newRow.insertCell(1);
+          const priceCell = newRow.insertCell(2);
+          const qtyCell = newRow.insertCell(3);
+          const actionCell = newRow.insertCell(4);
+
+          codeCell.textContent = product.code;
+          nameCell.textContent = product.name;
+          priceCell.textContent = `${product.price.toFixed(2)}`;
+
+          const qtyInput = document.createElement("input");
+          qtyInput.type = "number";
+          qtyInput.value = 1;
+          qtyInput.min = 1;
+          qtyCell.appendChild(qtyInput);
+
+          const addButton = document.createElement("button");
+          addButton.textContent = "Add to Cart";
+          addButton.onclick = function () {
+            addToCart(product, parseInt(qtyInput.value));
+          };
+          actionCell.appendChild(addButton);
+        });
+      }
+
+      function addToCart(product, quantity) {
+        const existingCartItem = cart.find(
+          (item) => item.code === product.code
+        );
+        if (existingCartItem) {
+          existingCartItem.quantity += quantity;
+        } else {
+          cart.push({ ...product, quantity });
+        }
+        loadCart();
+        updateTotalPrice();
+      }
+
+      function loadCart() {
+        const tableBody = document
+          .getElementById("cart-table")
+          .querySelector("tbody");
+        tableBody.innerHTML = "";
+
+        cart.forEach((item, index) => {
+          const newRow = tableBody.insertRow();
+
+          const codeCell = newRow.insertCell(0);
+          const nameCell = newRow.insertCell(1);
+          const priceCell = newRow.insertCell(2);
+          const qtyCell = newRow.insertCell(3);
+          const totalCell = newRow.insertCell(4);
+          const actionCell = newRow.insertCell(5);
+
+          codeCell.textContent = item.code;
+          nameCell.textContent = item.name;
+          priceCell.textContent = `${item.price.toFixed(2)}`;
+          qtyCell.textContent = item.quantity;
+          totalCell.textContent = `${(item.price * item.quantity).toFixed(2)}`;
+
+          const removeButton = document.createElement("button");
+          removeButton.textContent = "Remove";
+          removeButton.onclick = function () {
+            removeFromCart(index);
+          };
+          actionCell.appendChild(removeButton);
+        });
+      }
+
+      function removeFromCart(index) {
+        cart.splice(index, 1);
+        loadCart();
+        updateTotalPrice();
+      }
+
+      function updateTotalPrice() {
+        const totalPrice = cart.reduce(
+          (sum, item) => sum + item.price * item.quantity,
+          0
+        );
+        document.getElementById("total-price").textContent =
+          totalPrice.toFixed(2);
+      }
+
+      function clearSearch() {
+        document.getElementById("product-search").value = "";
+        renderProductTable(products);
+      }
+
+      renderProductTable(products);
+    </script>
+  </body>
+</html>
